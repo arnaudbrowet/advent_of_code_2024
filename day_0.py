@@ -2,8 +2,8 @@ from utils import read_input, pprint, config
 from pathlib import Path
 
 
-testing = False
-config['verbose']=False
+testing = True
+config['verbose']=True
 current_file = "day_"
 data_path = Path(f'./data/{current_file}/input.txt')
 
