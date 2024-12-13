@@ -1,6 +1,5 @@
 from utils import read_input
 from pathlib import Path
-import re
 
 data = read_input(Path('./data/day_04/input.txt'))
 
