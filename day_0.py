@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 testing = True
-config['verbose']=True
+config['verbose'] = True
 current_file = "day_"
 data_path = Path(f'./data/{current_file}/input.txt')
 
@@ -20,4 +20,3 @@ print(f'Part 1 - solution: {solution}')
 
 solution = 0
 print(f'Part 2 - solution: {solution}')
-
