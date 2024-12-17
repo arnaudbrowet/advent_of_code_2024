@@ -45,6 +45,50 @@ solution = sum([i*k for i, k in enumerate(sorted_sequence)])
 print(f'Part 1 - solution: {solution}')
 
 # Part 2
+# parse the sequence
+sequence = [{"value": int(i/2) if (i % 2 == 0) else '.', "length": int(l)}
+            for i, l in enumerate(list(data.strip()))]
+trim_sequence(sequence)
 
-solution = 0
+
+def find_element(seq, val):
+    for i in range(len(seq)):
+        if seq[i]['value'] == val:
+            return i
+
+
+def find_hole(seq, length):
+    for i in range(len(seq)):
+        if seq[i]['value'] == '.' and seq[i]['length'] >= length:
+            return i
+    return None
+
+
+nb_elements = sequence[-1]['value']
+for element in range(nb_elements, -1, -1):
+
+    index = find_element(sequence, element)
+    element_length = sequence[index]['length']
+    hole = find_hole(sequence, element_length)
+
+    if hole is not None and hole < index:
+        el = sequence.pop(index)
+        sequence.insert(index, {"value": ".", "length": el["length"]})
+        ho = sequence.pop(hole)
+        sequence.insert(hole, el)
+
+        if ho['length'] > el['length']:
+            ho['length'] -= el['length']
+            sequence.insert(hole+1, ho)
+
+# str_sequence = "".join([f"{element['value']}"*element["length"] for element in sequence])
+s = 0
+ind = 0
+for element in sequence:
+    for i in range(element['length']):
+        if element["value"] != '.':
+            s += ind*element['value']
+        ind += 1
+
+solution = s
 print(f'Part 2 - solution: {solution}')

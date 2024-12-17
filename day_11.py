@@ -2,9 +2,9 @@ from utils import read_input, pprint, config
 from pathlib import Path
 
 
-testing = False
+testing = True
 config['verbose'] = True
-current_file = "day_"
+current_file = "day_11"
 data_path = Path(f'./data/{current_file}/input.txt')
 
 if not testing:
@@ -15,6 +15,20 @@ else:
 '''
 
 line = [int(d) for d in data.split() if d]
+
+
+def split_stone(value):
+    str_value = f"{value}"
+    if value == 0:
+        return [1]
+    elif len(str_value) % 2 == 0:
+        mid = int(len(str_value)/2)
+        return [
+            int(str_value[0:mid]),
+            int(str_value[mid:]),
+        ]
+    else:
+        return [value*2024]
 
 
 class stone:
@@ -30,16 +44,13 @@ class stone:
 
     def blink(self):
         current_next = self.next
-        str_value = f"{self.value}"
-        if self.value == 0:
-            self.value = 1
-        elif len(str_value) % 2 == 0:
-            mid = int(len(str_value)/2)
-            self.value = int(str_value[0:mid])
-            new_stone = stone(int(str_value[mid:]), current_next)
+
+        values = split_stone(self.value)
+        self.value = values[0]
+
+        if len(values) > 1:
+            new_stone = stone(values[1], current_next)
             self.next = new_stone
-        else:
-            self.value *= 2024
 
         return current_next
 
@@ -79,5 +90,35 @@ print(f'Part 1 - solution: {solution}')
 
 # Part 2
 
-solution = 0
+stone_life = {}
+
+
+def path_length(value, length):
+    ex = stone_life.get((value, length), None)
+    if ex:
+        return ex
+
+    if length == 0:
+        stone_life[(value, length)] = 1
+    else:
+        values = split_stone(value)
+        stone_life[(value, length)] = sum(
+            [path_length(v, length-1) for v in values])
+
+    return stone_life[(value, length)]
+
+
+# part 1 bis
+s = sum([path_length(d, 25) for d in line])
+print(f'Part 1 bis - solution: {s}')
+# nb_blinks = 75
+# starting_stone = current_stone
+# for step in range(nb_blinks):
+#     print(f"{step}/{nb_blinks}")
+#     s = starting_stone
+#     while s is not None:
+#         s = s.blink()
+
+
+solution = sum([path_length(d, 75) for d in line])
 print(f'Part 2 - solution: {solution}')
