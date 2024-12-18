@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 
 testing = False
-config['verbose'] = True
+config['verbose'] = False
 current_file = "day_13"
 data_path = Path(f'./data/{current_file}/input.txt')
 
@@ -47,10 +47,6 @@ def find_solutions(A, B, P):
         if Ay*ka + By*kb != Py:
             continue
 
-        # check
-        d = 1-(Ax*By)/(Bx*Ay)
-        kkb = 1/d * (Px/Bx - (Ax*Py)/(Bx*Ay))
-        print(kb, kkb)
         cost = 3*ka + kb
         if sol is None or sol[2] > cost:
             sol = (ka, kb, cost)
@@ -58,8 +54,31 @@ def find_solutions(A, B, P):
     return sol
 
 
+def find_equation_solution(A, B, P):
+    Ax, Ay = A
+    Bx, By = B
+    Px, Py = P
+
+    d = 1-(Ax*By)/(Bx*Ay)
+    s = (Px/Bx - (Ax*Py)/(Bx*Ay))
+
+    r = s/d
+
+    kb = int(round(s/d))
+    ka = int(round((Px - kb*Bx) / Ax))
+
+    # check
+    ppx = Ax*ka + Bx*kb
+    ppy = Ay*ka + By*kb
+    if ppx != Px or ppy != Py:
+        return None
+    return (ka, kb, 3*ka+kb)
+
+
+P2_shift = 10000000000000
 total = 0
-for c in configurations:
+total2 = 0
+for i, c in enumerate(configurations):
     s = re.search(r"Button A: X\+(\d+), Y\+(\d+)", c[0])
     A_X, A_Y = (int(v) for v in s.groups())
 
@@ -69,16 +88,25 @@ for c in configurations:
     s = re.search(r"Prize: X=(\d+), Y=(\d+)", c[2])
     P_X, P_Y = (int(v) for v in s.groups())
 
-    sol = find_solutions((A_X, A_Y), (B_X, B_Y), (P_X, P_Y))
+    A = (A_X, A_Y)
+    B = (B_X, B_Y)
+    P = (P_X, P_Y)
 
+    # sol = find_solutions((A_X, A_Y), (B_X, B_Y), (P_X, P_Y))
+    sol = find_equation_solution(A, B, P)
     if sol is not None:
         total += sol[2]
 
+    P = (P_X + P2_shift, P_Y+P2_shift)
+    sol2 = find_equation_solution(A, B, P)
+    if sol2 is not None:
+        pprint('find solution for ', i+1, sol2)
+        total2 += sol2[2]
 
 solution = total
 print(f'Part 1 - solution: {solution}')
 
 # Part 2
 
-solution = 0
+solution = total2
 print(f'Part 2 - solution: {solution}')
