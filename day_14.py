@@ -126,13 +126,14 @@ for m in range(100000):
 
     cc_size = find_largest_cc(r)
     if cc_size > 100:
-        print(m)
+        print(m+1)
         print_robots(r)
-    break
+        break
+    # break
     # has_line = print_robots(r, line_count)
     # if has_line:
     #     print('***Found')
     # # print('\n\n')
 
-solution = 0
+solution = m+1
 print(f'Part 2 - solution: {solution}')
