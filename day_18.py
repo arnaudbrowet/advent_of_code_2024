@@ -3,7 +3,7 @@ from pathlib import Path
 import heapq
 from utils import orthogonal_shift, is_valid_grid_index
 
-testing = True
+testing = False
 config['verbose'] = True
 current_file = "day_18"
 data_path = Path(f'./data/{current_file}/input.txt')
@@ -50,9 +50,6 @@ if testing:
 
 falled = positions[:bytes]
 
-visited = {}
-to_visit = []
-
 
 def print_grid(pounds):
     for i in range(grid_size+1):
@@ -67,36 +64,52 @@ def print_grid(pounds):
 
 
 # print_grid(falled)
-heapq.heappush(to_visit, (0, (0, 0)))
-w = None
-found = False
-while not found:
-    weight, pos = heapq.heappop(to_visit)
-    # print(weight, pos)
-    if (pos in visited):
-        continue
+def do_search(falled):
+    visited = {}
+    to_visit = []
 
-    visited[pos] = weight
+    heapq.heappush(to_visit, (0, (0, 0)))
+    w = None
+    found = False
+    while not found and len(to_visit):
+        weight, pos = heapq.heappop(to_visit)
+        # print(weight, pos)
+        if (pos in visited):
+            continue
 
-    for shift in orthogonal_shift.values():
+        visited[pos] = weight
 
-        np_x, np_y = pos[0] + shift[0], pos[1] + shift[1]
-        np = np_x, np_y
-        # print(np)
-        if np == (grid_size, grid_size):
-            w = weight+1
-            found = True
-            break
+        for shift in orthogonal_shift.values():
 
-        if is_valid_grid_index(np_x, grid_size+1, np_y, grid_size+1) and np not in falled and np not in visited:
-            # print('adding',np)
-            heapq.heappush(to_visit, (weight+1, np))
+            np_x, np_y = pos[0] + shift[0], pos[1] + shift[1]
+            np = np_x, np_y
+            # print(np)
+            if np == (grid_size, grid_size):
+                w = weight+1
+                found = True
+                break
 
-    # print(to_visit)
-solution = w
+            if is_valid_grid_index(np_x, grid_size+1, np_y, grid_size+1) and np not in falled and np not in visited:
+                # print('adding',np)
+                heapq.heappush(to_visit, (weight+1, np))
+    return w
+
+
+solution = do_search(falled)
 print(f'Part 1 - solution: {solution}')
 
 # Part 2
 
-solution = 0
+# print_grid(falled)
+block = None
+w = None
+i = len(positions)-1
+while w is None:
+    i -= 1
+    falled = positions[:i]
+    w = do_search(falled)
+    if w is None:
+        block = falled[-1]
+
+solution = block[1], block[0]
 print(f'Part 2 - solution: {solution}')
